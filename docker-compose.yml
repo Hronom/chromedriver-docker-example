@@ -6,7 +6,7 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=prod
     ports:
-      - "8117:8117"
+      - "8080:8080"
     logging:
       driver: json-file
       options:

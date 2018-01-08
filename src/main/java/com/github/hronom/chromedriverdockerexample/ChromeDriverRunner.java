@@ -2,8 +2,11 @@ package com.github.hronom.chromedriverdockerexample;
 
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -13,6 +16,13 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class ChromeDriverRunner implements ApplicationRunner {
+    private final ApplicationContext appContext;
+
+    @Autowired
+    public ChromeDriverRunner(ApplicationContext appContext) {
+        this.appContext = appContext;
+    }
+
     @Override
     public void run(ApplicationArguments args) throws Exception {
         ExecutorService executorService = Executors.newFixedThreadPool(3);
@@ -22,6 +32,7 @@ public class ChromeDriverRunner implements ApplicationRunner {
                 public void run() {
                     ChromeDriver chromeDriver = null;
                     try {
+                        System.out.println("Starting...");
                         ChromeOptions options = new ChromeOptions();
                         options.addArguments("--no-sandbox");
                         options.setAcceptInsecureCerts(true);
@@ -41,5 +52,7 @@ public class ChromeDriverRunner implements ApplicationRunner {
             });
         }
         executorService.shutdown();
+        executorService.awaitTermination(3, TimeUnit.MINUTES);
+        SpringApplication.exit(appContext, () -> 0);
     }
 }
