@@ -1,5 +1,7 @@
 package com.github.hronom.chromedriverdockerexample;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,8 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 public class ChromeDriverRunner implements ApplicationRunner {
+    private final Log logger = LogFactory.getLog(getClass());
+
     private final ApplicationContext appContext;
 
     @Autowired
@@ -42,6 +46,8 @@ public class ChromeDriverRunner implements ApplicationRunner {
                         chromeDriver.get("https://www.google.com");
                         String html = chromeDriver.getPageSource();
                         System.out.println(html);
+                    } catch (Exception exception) {
+                        logger.error("Error", exception);
                     } finally {
                         if (Objects.nonNull(chromeDriver)) {
                             chromeDriver.close();
