@@ -1,14 +1,13 @@
-FROM ubuntu:16.04
+FROM ubuntu:20.04
 
 RUN apt-get update -y \
     && apt-get -qqy dist-upgrade \
-    && apt-get -qqy install software-properties-common gettext-base unzip \
+    && apt-get -qqy install software-properties-common gettext-base unzip wget \
 	&& rm -rf /var/lib/apt/lists/* /var/cache/apt/*
 
-RUN add-apt-repository ppa:webupd8team/java -y
-RUN apt-get update -y
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | /usr/bin/debconf-set-selections
-RUN apt-get install oracle-java8-installer -y
+RUN wget -O- https://apt.corretto.aws/corretto.key | apt-key add -
+RUN add-apt-repository 'deb https://apt.corretto.aws stable main'
+RUN apt-get update; apt-get install -y java-11-amazon-corretto-jdk
 RUN java -version
 
 ####################################################################################################
@@ -25,7 +24,7 @@ RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key
 	&& sed -i 's/"$HERE\/chrome"/"$HERE\/chrome" --no-sandbox --disable-dev-shm-usage/g' /opt/google/chrome/google-chrome
 
 # ChromeDriver
-ARG CHROME_DRIVER_VERSION=2.40
+ARG CHROME_DRIVER_VERSION=100.0.4896.20
 RUN wget --no-verbose -O /tmp/chromedriver_linux64.zip https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip \
 	&& rm -rf /opt/chromedriver \
 	&& unzip /tmp/chromedriver_linux64.zip -d /opt \
